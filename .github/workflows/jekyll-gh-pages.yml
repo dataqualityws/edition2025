@@ -18,18 +18,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Verify the edition2025 folder exists
+      - name: Verify site folder exists
+        run: |
+          if [ ! -d "./edition2025" ]; then
+            echo "❌ Folder ./edition2025 does not exist in this branch!"
+            exit 1
+          fi
+
+      # Setup GitHub Pages environment
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # Build the Jekyll site
       - name: Build Jekyll site
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./edition2025       # <-- Point to your subdirectory
-          destination: ./_site        # Output site to root _site folder
+          source: ./edition2025       # Jekyll site folder
+          destination: ./_site        # Output folder for Pages
 
+      # Upload the built site as artifact
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -42,6 +54,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Deploy to GitHub Pages, enabling site if it doesn't exist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          enablement: true   # auto-enable Pages if not already enabled
