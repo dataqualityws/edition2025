@@ -1,9 +1,9 @@
-name: Deploy Jekyll edition2025 to GitHub Pages
+name: Deploy edition2025 Jekyll site to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
+    branches: ["main"]       # Build on pushes to main
+  workflow_dispatch:         # Allow manual triggering
 
 permissions:
   contents: read
@@ -18,30 +18,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repo
+      # 1️⃣ Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Verify the edition2025 folder exists
+      # 2️⃣ Ensure Jekyll site folder exists
       - name: Verify site folder exists
         run: |
-          if [ ! -d "./edition2025" ]; then
-            echo "❌ Folder ./edition2025 does not exist in this branch!"
+          if [ ! -d "." ]; then
+            echo "❌ No content found in repository root!"
             exit 1
           fi
 
-      # Setup GitHub Pages environment
+      # 3️⃣ Setup GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Build the Jekyll site
+      # 4️⃣ Build the Jekyll site
       - name: Build Jekyll site
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./edition2025       # Jekyll site folder
-          destination: ./_site        # Output folder for Pages
+          source: ./               # Root of repository
+          destination: ./_site     # Output folder
 
-      # Upload the built site as artifact
+      # 5️⃣ Upload built site as artifact
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -54,9 +54,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Deploy to GitHub Pages, enabling site if it doesn't exist
+      # 6️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          enablement: true   # auto-enable Pages if not already enabled
+          enablement: true   # Automatically enable Pages if first deployment
